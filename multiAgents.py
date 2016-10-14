@@ -111,8 +111,6 @@ class MinimaxAgent(MultiAgentSearchAgent):
       Your minimax agent (question 2)
     """
     def getAction(self, gameState):
-        if gameState.isWin() or gameState.isLose():
-            return self.evaluationFunction(gameState)
         """
           Returns the minimax action from the current gameState using self.depth
           and self.evaluationFunction.
@@ -130,25 +128,46 @@ class MinimaxAgent(MultiAgentSearchAgent):
             Returns the total number of agents in the game
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        minimax_action = None
+        root_max_value = -(float("inf"))
+        if gameState.isWin() or gameState.isLose():
+            return self.evaluationFunction(gameState)
+        for action in gameState.getLegalActions(0): #pacman's legal actions
+            value = self.minimax_decision(gameState.generateSuccessor(0, action), 1) #start building the decision tree
+            if value > root_max_value:
+                minimax_action = action
+                root_max_value = value
+        return minimax_action
 
-    def max_value(self, gameState):
-        legalMoves = gameState.getLegalActions(agentIndex) #get our agent's legal moves
-        if len(legalMoves) == 0: #if we are at a leaf node
+
+    def minimax_decision(self, gameState, depth):
+        if depth % 2 == 0:
+            print "GameState1:", type(gameState)
+            return self.min_value(gameState, depth)
+        else:
+            print "GameState2:", type(gameState)
+            return self.max_value(gameState, depth)
+
+
+    def max_value(self, gameState, depth):
+        print "MAX VALUE:", type(gameState)
+        moves = gameState.getLegalActions(0)
+        if len(moves) == 0: #if we are at a leaf node
             return self.evaluationFunction(gameState)
 
         value = float("inf")
-        for action in legalMoves:
-            value = max(v, min_value(action))
+        for action in moves:
+            value = max(value, self.min_value(generateSuccessor(depth+1, action))) #BUG: running method with action, should be state
 
-    def min_value(self, gameState):
-        legalMoves = gameState.getLegalActions() #get our agent's legal moves
+    def min_value(self, gameState, depth):
+        print "MIN VALUE:", type(gameState)
+        legalMoves = gameState.getLegalActions(0)
         if len(legalMoves) == 0: #if we are at a leaf node
             return self.evaluationFunction(gameState)
 
         value = -(float("inf"))
         for action in legalMoves:
-            value = min(v, max_value(action))
+            value = min(value, self.max_value(action))
 
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
