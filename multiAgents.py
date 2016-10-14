@@ -4,7 +4,7 @@
 # educational purposes provided that (1) you do not distribute or publish
 # solutions, (2) you retain this notice, and (3) you provide clear
 # attribution to UC Berkeley, including a link to http://ai.berkeley.edu.
-# 
+#
 # Attribution Information: The Pacman AI projects were developed at UC Berkeley.
 # The core projects and autograders were primarily created by John DeNero
 # (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
@@ -110,7 +110,6 @@ class MinimaxAgent(MultiAgentSearchAgent):
     """
       Your minimax agent (question 2)
     """
-
     def getAction(self, gameState):
         """
           Returns the minimax action from the current gameState using self.depth
@@ -130,6 +129,25 @@ class MinimaxAgent(MultiAgentSearchAgent):
         """
         "*** YOUR CODE HERE ***"
         util.raiseNotDefined()
+
+    def max_value(self, gameState):
+        legalMoves = gameState.getLegalActions(agentIndex) #get our agent's legal moves
+        if len(legalMoves) == 0: #if we are at a leaf node
+            return self.evaluationFunction(gameState)
+
+        value = float("inf")
+        for action in legalMoves:
+            value = max(v, min_value(action))
+
+    def min_value(self, gameState):
+        legalMoves = gameState.getLegalActions() #get our agent's legal moves
+        if len(legalMoves) == 0: #if we are at a leaf node
+            return self.evaluationFunction(gameState)
+
+        value = -(float("inf"))
+        for action in legalMoves:
+            value = min(v, max_value(action))
+
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
     """
@@ -170,4 +188,3 @@ def betterEvaluationFunction(currentGameState):
 
 # Abbreviation
 better = betterEvaluationFunction
-
