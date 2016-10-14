@@ -111,6 +111,8 @@ class MinimaxAgent(MultiAgentSearchAgent):
       Your minimax agent (question 2)
     """
     def getAction(self, gameState):
+        if gameState.isWin() or gameState.isLose():
+            return self.evaluationFunction(gameState)
         """
           Returns the minimax action from the current gameState using self.depth
           and self.evaluationFunction.
