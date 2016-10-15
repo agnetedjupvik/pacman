@@ -134,35 +134,38 @@ class MinimaxAgent(MultiAgentSearchAgent):
             return self.evaluationFunction(gameState)
 
         for action in gameState.getLegalActions(0): #pacman's legal actions
-            value = self.minimax_decision(gameState.generateSuccessor(0, action)) #start building the decision tree
+            value = self.minimax_decision(gameState.generateSuccessor(0, action), 0) #start building the decision tree
             if value > root_max_value:
                 minimax_action = action
                 root_max_value = value
         return minimax_action
 
 
-    def minimax_decision(self, gameState):
-        return self.min_value(gameState, 0)
+    def minimax_decision(self, gameState, depth):
+        if depth % gameState.getNumAgents() == 0: #we are at pacman
+            return self.max_value(gameState, depth, depth % gameState.getNumAgents())
+        else:
+            return self.min_value(gameState, depth, depth % gameState.getNumAgents())
 
 
-    def max_value(self, gameState, depth):
+    def max_value(self, gameState, depth, agentIndex):
         moves = gameState.getLegalActions(0)
         if depth == self.depth: #if we are at a leaf node
             return self.evaluationFunction(gameState)
 
         value = -float("inf")
         for action in moves:
-            value = max(value, self.min_value(gameState.generateSuccessor(0, action), depth+1))
+            value = max(value, self.min_value(gameState.generateSuccessor(agentIndex, action), depth+1, agentIndex))
         return value
 
-    def min_value(self, gameState, depth):
+    def min_value(self, gameState, depth, agentIndex):
         legalMoves = gameState.getLegalActions(1)
         if depth == self.depth: #if we are at a leaf node
             return self.evaluationFunction(gameState)
 
         value = float("inf")
         for action in legalMoves:
-            value = min(value, self.max_value(gameState.generateSuccessor(1, action), depth+1))
+            value = min(value, self.max_value(gameState.generateSuccessor(agentIndex, action), depth+1, agentIndex))
         return value
 
 
