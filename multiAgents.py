@@ -174,8 +174,9 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
           Returns the minimax action using self.depth and self.evaluationFunction
         """
         "*** YOUR CODE HERE ***"
-        alphas = [-float("inf")] * gameState.getNumAgents() #store alpha for each agent, thus accessing by agentIndex
-        alphas[0] = float("inf")
+        alphas = [-float('inf')]
+        for _ in range(1, gameState.getNumAgents()):
+          alphas.append(float('inf'))
 
         def minimax_decision(state, depth, alphas):
             if state.isWin() or state.isLose() or depth == self.depth * state.getNumAgents(): #if we are at a terminal state
@@ -187,17 +188,20 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
                 return minValue(state, depth, depth % state.getNumAgents(), alphas)
 
         def maxValue(gameState, depth, agentIndex, alphas):
+            alphas = alphas[:]
             moves = gameState.getLegalActions(agentIndex)
 
             value = -float("inf")
             for action in moves:
                 value = max(value, minimax_decision(gameState.generateSuccessor(agentIndex, action), depth+1, alphas))
-                if value > min(alphas[1:]): #pruning magic
+                #if value > min(alphas[1:]): #pruning magic
+                if value > min(alphas[1:]):
                     return value
                 alphas[agentIndex] = max(alphas[agentIndex], value)
             return value
 
         def minValue(gameState, depth, agentIndex, alphas):
+            alphas = alphas[:]
             moves = gameState.getLegalActions(agentIndex)
 
             value = float("inf")
@@ -207,6 +211,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
                     return value
                 alphas[agentIndex] = min(alphas[agentIndex], value)
             return value
+
 
         minimax_action = None
         root_max_value = -(float("inf"))
@@ -218,6 +223,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
                 root_max_value = value
             alphas[0] = max(alphas[0], root_max_value) #set first alpha to max value at root. Use this when getting minValue
         return minimax_action
+
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
