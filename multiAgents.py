@@ -156,8 +156,6 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
         minimax_action = None
         root_max_value = -(float("inf"))
-        if gameState.isWin() or gameState.isLose():
-            return self.evaluationFunction(gameState)
 
         for action in gameState.getLegalActions(0): #pacman's legal actions
             value = minimax_decision(gameState.generateSuccessor(0, action), 1) #start building the decision tree
