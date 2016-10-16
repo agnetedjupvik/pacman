@@ -128,46 +128,43 @@ class MinimaxAgent(MultiAgentSearchAgent):
             Returns the total number of agents in the game
         """
         "*** YOUR CODE HERE ***"
+
+        def minimax_decision(state, depth):
+            if state.isWin() or state.isLose() or depth == self.depth * state.getNumAgents(): #if we are at a terminal state
+                return self.evaluationFunction(state)
+
+            if depth % state.getNumAgents() == 0: #if we are at a pacman level of the tree
+                return maxValue(state, depth, depth % state.getNumAgents())
+            else: #if we are on the level of any ghost
+                return minValue(state, depth, depth % state.getNumAgents())
+
+        def maxValue(gameState, depth, agentIndex):
+            moves = gameState.getLegalActions(agentIndex)
+
+            value = -float("inf")
+            for action in moves:
+                value = max(value, minimax_decision(gameState.generateSuccessor(agentIndex, action), depth+1))
+            return value
+
+        def minValue(gameState, depth, agentIndex):
+            moves = gameState.getLegalActions(agentIndex)
+
+            value = float("inf")
+            for action in moves:
+                value = min(value, minimax_decision(gameState.generateSuccessor(agentIndex, action), depth+1))
+            return value
+
         minimax_action = None
         root_max_value = -(float("inf"))
         if gameState.isWin() or gameState.isLose():
             return self.evaluationFunction(gameState)
 
         for action in gameState.getLegalActions(0): #pacman's legal actions
-            value = self.minimax_decision(gameState.generateSuccessor(0, action), 0) #start building the decision tree
+            value = minimax_decision(gameState.generateSuccessor(0, action), 1) #start building the decision tree
             if value > root_max_value:
                 minimax_action = action
                 root_max_value = value
         return minimax_action
-
-
-    def minimax_decision(self, gameState, depth):
-        if depth % gameState.getNumAgents() == 0: #we are at pacman
-            return self.max_value(gameState, depth, depth % gameState.getNumAgents())
-        else:
-            return self.min_value(gameState, depth, depth % gameState.getNumAgents())
-
-
-    def max_value(self, gameState, depth, agentIndex):
-        moves = gameState.getLegalActions(0)
-        if depth == self.depth: #if we are at a leaf node
-            return self.evaluationFunction(gameState)
-
-        value = -float("inf")
-        for action in moves:
-            value = max(value, self.min_value(gameState.generateSuccessor(agentIndex, action), depth+1, agentIndex))
-        return value
-
-    def min_value(self, gameState, depth, agentIndex):
-        legalMoves = gameState.getLegalActions(1)
-        if depth == self.depth: #if we are at a leaf node
-            return self.evaluationFunction(gameState)
-
-        value = float("inf")
-        for action in legalMoves:
-            value = min(value, self.max_value(gameState.generateSuccessor(agentIndex, action), depth+1, agentIndex))
-        return value
-
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
     """
