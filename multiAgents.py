@@ -174,7 +174,40 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
           Returns the minimax action using self.depth and self.evaluationFunction
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        def minimax_decision(state, depth):
+            if state.isWin() or state.isLose() or depth == self.depth * state.getNumAgents(): #if we are at a terminal state
+                return self.evaluationFunction(state)
+
+            if depth % state.getNumAgents() == 0: #if we are at a pacman level of the tree
+                return maxValue(state, depth, depth % state.getNumAgents())
+            else: #if we are on the level of any ghost
+                return minValue(state, depth, depth % state.getNumAgents())
+
+        def maxValue(gameState, depth, agentIndex):
+            moves = gameState.getLegalActions(agentIndex)
+
+            value = -float("inf")
+            for action in moves:
+                value = max(value, minimax_decision(gameState.generateSuccessor(agentIndex, action), depth+1))
+            return value
+
+        def minValue(gameState, depth, agentIndex):
+            moves = gameState.getLegalActions(agentIndex)
+
+            value = float("inf")
+            for action in moves:
+                value = min(value, minimax_decision(gameState.generateSuccessor(agentIndex, action), depth+1))
+            return value
+
+        minimax_action = None
+        root_max_value = -(float("inf"))
+
+        for action in gameState.getLegalActions(0): #pacman's legal actions
+            value = minimax_decision(gameState.generateSuccessor(0, action), 1) #start building the decision tree
+            if value > root_max_value:
+                minimax_action = action
+                root_max_value = value
+        return minimax_action
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
